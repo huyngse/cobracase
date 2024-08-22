@@ -4,10 +4,12 @@ import Link from 'next/link'
 import { cn } from '@/lib/utils';
 import { buttonVariants } from './ui/button';
 import { ArrowRightIcon } from 'lucide-react';
+import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server';
 
-const Navbar = () => {
-    const user = "undefined";
-    const isAdmin = true;
+const Navbar = async () => {
+    const { getUser } = getKindeServerSession();
+    const user = await getUser();
+    const isAdmin = user?.email === process.env.ADMIN_EMAIL;
     return (
         <nav className='sticky z-[100] h-14  top-0 inset-x-0 w-full border-b border-gray-200 bg-white/75 backdrop-blur-lg transition-all'>
             <MaxWidthWrapper>
