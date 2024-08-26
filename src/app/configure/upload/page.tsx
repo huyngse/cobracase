@@ -10,11 +10,10 @@ import Dropzone, { FileRejection } from 'react-dropzone'
 const Page = () => {
     const {toast} = useToast();
     const [isDragOver, setIsDragOver] = useState<boolean>(false);
-    const [isUploading, setIsUploading] = useState(false);
     const [isPending, startTrasition] = useTransition();
     const [uploadProgress, setUploadProgress] = useState(0);
     const router = useRouter();
-    const { startUpload } = useUploadThing("imageUploader", {
+    const { startUpload, isUploading } = useUploadThing("imageUploader", {
         onClientUploadComplete: ([data]) => {
             const configId = data.serverData.configId;
             startTrasition(() => {
@@ -22,7 +21,7 @@ const Page = () => {
             })
         },
         onUploadProgress(p) {
-            setUploadProgress(0);
+            setUploadProgress(p);
         }
     });
     const onDropRejected = (rejectedFiles: FileRejection[]) => {
