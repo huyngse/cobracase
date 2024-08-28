@@ -16,15 +16,36 @@ import { ArrowRight, Check, ChevronsUpDown } from 'lucide-react';
 import { BASE_PRICE } from '@/config/product';
 import { useUploadThing } from '@/lib/uploadthing';
 import { toast } from '@/components/ui/use-toast';
+import { useMutation } from '@tanstack/react-query';
+import { SaveConfigArgs, saveConfig as _saveConfig } from './actions';
+import { useRouter } from 'next/navigation';
 interface DesignConfiguratorProps {
-  congfigId: string,
+  configId: string,
   imageUrl: string,
   dimensions: {
     width: number,
     height: number
   }
 }
-const DesignConfigurator = ({ congfigId, imageUrl, dimensions }: DesignConfiguratorProps) => {
+const DesignConfigurator = ({ configId, imageUrl, dimensions }: DesignConfiguratorProps) => {
+  const router = useRouter();
+
+  const { mutate: saveConfig } = useMutation({
+    mutationKey: ["save-config"],
+    mutationFn: async (args: SaveConfigArgs) => {
+      await Promise.all([saveConfiguration(), _saveConfig(args)]);
+    },
+    onError: () => {
+      toast({
+        title: "Something went wrong",
+        description: "There was an error on our end. Please try again.",
+        variant: "destructive"
+      })
+    },
+    onSuccess: () => {
+      router.push(`/configure/preview?id=${configId}`);
+    }
+  });
 
   const [options, setOptions] = useState<{
     color: (typeof COLORS)[number],
@@ -37,6 +58,7 @@ const DesignConfigurator = ({ congfigId, imageUrl, dimensions }: DesignConfigura
     material: MATERIALS.options[0],
     finish: FINISHES.options[0],
   })
+
   const [renderedDimension, setRenderedDimension] = useState({
     width: dimensions.width / 4,
     height: dimensions.height / 4,
@@ -71,7 +93,8 @@ const DesignConfigurator = ({ congfigId, imageUrl, dimensions }: DesignConfigura
       const blob = base64ToBlob(base64Data, "image/png");
       const file = new File([blob], "cropimage.png", { type: "image/png" });
       // downloadFile(file);
-      await startUpload([file], { configId: congfigId })
+      await startUpload([file], { configId: configId });
+
     } catch (error) {
       toast({
         title: "Something went wrong",
@@ -102,6 +125,7 @@ const DesignConfigurator = ({ congfigId, imageUrl, dimensions }: DesignConfigura
     const byteArray = new Uint8Array(byteNumbers);
     return new Blob([byteArray], { type: mimeType })
   }
+
   return (
     <div className='relative mt-20 grid grid-cols-1 lg:grid-cols-3  mb-20 pb-20'>
       <div
@@ -294,7 +318,13 @@ const DesignConfigurator = ({ congfigId, imageUrl, dimensions }: DesignConfigura
               <Button
                 size="sm"
                 className='w-full'
-                onClick={saveConfiguration}
+                onClick={() => {saveConfig({
+                  configId: configId,
+                  color: options.color.value,
+                  finish: options.finish.value,
+                  material: options.material.value,
+                  model: options.model.value,
+                })}}
               >
                 Continue <ArrowRight className='w-4 h-4 ml-1.5 inline' />
               </Button>
