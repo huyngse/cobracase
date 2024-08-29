@@ -62,7 +62,7 @@ export const createCheckoutSession = async ({ configId }
         cancel_url: `${process.env.NEXT_PUBLIC_SERVER_URL}/configure/preview?id=${configuration.id}`,
         // payment_method_types: ["card", "paypal"],
         mode: "payment",
-        // shipping_address_collection: { allowed_countries: ["US"] }
+        shipping_address_collection: { allowed_countries: ["US", "VN"] },
         metadata: {
             userId: user.id,
             orderId: order.id
