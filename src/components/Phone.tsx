@@ -13,7 +13,11 @@ const Phone = ({ imgSrc, className, darkMode = false, ...props }: PhoneProps) =>
                 className='pointer-events-none z-50 select-none'
             />
             <div className='absolute -z-10 inset-0'>
-                <img src={imgSrc} alt="overlaying phone image"  className='object-cover h-full'/>
+                <img
+                    src={imgSrc} 
+                    alt="overlaying phone image"
+                    className='object-cover min-w-full min-h-full'
+                />
             </div>
         </div>
     )
