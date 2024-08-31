@@ -30,7 +30,7 @@ interface DesignConfiguratorProps {
 const DesignConfigurator = ({ configId, imageUrl, dimensions }: DesignConfiguratorProps) => {
   const router = useRouter();
 
-  const { mutate: saveConfig } = useMutation({
+  const { mutate: saveConfig, isPending } = useMutation({
     mutationKey: ["save-config"],
     mutationFn: async (args: SaveConfigArgs) => {
       await Promise.all([saveConfiguration(), _saveConfig(args)]);
@@ -318,13 +318,18 @@ const DesignConfigurator = ({ configId, imageUrl, dimensions }: DesignConfigurat
               <Button
                 size="sm"
                 className='w-full'
-                onClick={() => {saveConfig({
-                  configId: configId,
-                  color: options.color.value,
-                  finish: options.finish.value,
-                  material: options.material.value,
-                  model: options.model.value,
-                })}}
+                onClick={() => {
+                  saveConfig({
+                    configId: configId,
+                    color: options.color.value,
+                    finish: options.finish.value,
+                    material: options.material.value,
+                    model: options.model.value,
+                  })
+                }}
+                isLoading={isPending}
+                disabled={isPending}
+                loadingText='Saving'
               >
                 Continue <ArrowRight className='w-4 h-4 ml-1.5 inline' />
               </Button>
